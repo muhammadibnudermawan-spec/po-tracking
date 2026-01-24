@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Tracking PO</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f3f3;
+}
+
+/* Card utama */
+.box {
+  width: 420px;
+  margin: 60px auto;
+  background: #fff;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* Input & Button */
+input, button {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  margin-top: 10px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+button {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #eaeaea;
+}
+
+/* Card hasil */
+.result-card {
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+/* Baris hasil */
+.result-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+/* Ikon */
+.icon {
+  width: 24px;
+  text-align: center;
+  margin-right: 8px;
+}
+
+/* Label */
+.label {
+  width: 120px;
+  font-weight: bold;
+}
+
+/* Value */
+.value {
+  flex: 1;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Cek Status PO</h2>
+
+  <input id="poInput" placeholder="Masukkan Nomor PO">
+  <button onclick="cekPO()">CEK</button>
+
+  <div class="result-card" id="result"></div>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzQOxnBn5n4C34sei11rWvlMosTFdCn6WVA3QGAy5AxCdSr_CGvaQXqmsE40-vAOuvKSQ/exec";
+
+function formatTanggal(v) {
+  if (!v) return "-";
+  return new Date(v).toLocaleDateString("id-ID");
+}
+
+async function cekPO() {
+  const po = document.getElementById("poInput").value.trim();
+  const res = document.getElementById("result");
+
+  if (!po) {
+    res.innerHTML = "❌ Nomor PO wajib diisi";
+    return;
+  }
+
+  res.innerHTML = "🔍 Mencari data...";
+
+  try {
+    const response = await fetch(API_URL);
+    const data = await response.json();
+
+    let ditemukan = null;
+
+    for (let i = 0; i < data.length; i++) {
+      if (String(data[i]["Nomor PO"]).trim() == po) {
+        ditemukan = data[i];
+      }
+    }
+
+    if (!ditemukan) {
+      res.innerHTML = "❌ Data tidak ditemukan";
+      return;
+    }
+
+    res.innerHTML = `
+      <div class="result-row">
+        <div class="icon">📦</div>
+        <div class="label">PO</div>
+        <div class="value">${ditemukan["Nomor PO"]}</div>
+      </div>
+
+      <div class="result-row">
+        <div class="icon">🏭</div>
+        <div class="label">Vendor</div>
+        <div class="value">${ditemukan["Nama Vendor"]}</div>
+      </div>
+
+      <div class="result-row">
+        <div class="icon">🚚</div>
+        <div class="label">Status</div>
+        <div class="value">${ditemukan["Status PO"]}</div>
+      </div>
+
+      <div class="result-row">
+        <div class="icon">📅</div>
+        <div class="label">Estimasi</div>
+        <div class="value">${formatTanggal(ditemukan["Perkiraan tanggal sampai"])}</div>
+      </div>
+
+      <div class="result-row">
+        <div class="icon">👤</div>
+        <div class="label">PIC</div>
+        <div class="value">${ditemukan["Nama PIC vendor"]}</div>
+      </div>
+    `;
+  } catch (err) {
+    console.error(err);
+    res.innerHTML = "❌ Gagal mengambil data";
+  }
+}
+</script>
+
+</body>
+</html>
