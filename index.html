@@ -130,6 +130,14 @@ async function cekPO() {
         <div class="label">PO</div>
         <div class="value">${ditemukan["Nomor PO"]}</div>
       </div>
+      
+      <div class="result-row">
+      <div class="icon">
+        ${ditemukan["tipe po"] === "Jasa" ? "🛠️" : "📦"}
+      </div>
+      <div class="label">Tipe PO</div>
+      <div class="value">${ditemukan["tipe po"]}</div>
+    </div>
 
       <div class="result-row">
         <div class="icon">🏭</div>
@@ -171,5 +179,6 @@ async function cekPO() {
 
 </body>
 </html>
+
 
 
