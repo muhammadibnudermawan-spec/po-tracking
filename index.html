@@ -171,12 +171,11 @@ async function cekPO() {
     // Render hasil
     res.innerHTML = `
       <div class="result-card">
-
-        <div class="result-row">
-          <div class="icon">📦</div>
-          <div class="label">Nomor PO</div>
-          <div class="value">${ditemukan["Nomor PO"]}</div>
-        </div>
+<div class="result-row">
+  <div class="icon">🧾</div>
+  <div class="label">Nomor PO</div>
+  <div class="value">${ditemukan["Nomor PO"]}</div>
+</div>
 
         <div class="result-row">
           <div class="icon">${tipePO === "jasa" ? "🛠️" : "📦"}</div>
@@ -227,3 +226,4 @@ async function cekPO() {
 
 </body>
 </html>
+
