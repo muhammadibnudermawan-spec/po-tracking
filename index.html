@@ -147,12 +147,13 @@ async function cekPO() {
 
     let ditemukan = null;
 
-    for (let i = 0; i < data.length; i++) {
-      if (String(data[i]["Nomor PO"]).trim() === po) {
-        ditemukan = data[i];
-        break;
-      }
-    }
+// mulai dari baris paling bawah (update terbaru)
+for (let i = data.length - 1; i >= 0; i--) {
+  if (String(data[i]["Nomor PO"]).trim() === po) {
+    ditemukan = data[i];
+    break; // ✅ stop di data TERBARU
+  }
+}
 
     if (!ditemukan) {
       res.innerHTML = "❌ Data tidak ditemukan";
@@ -226,4 +227,5 @@ async function cekPO() {
 
 </body>
 </html>
+
 
