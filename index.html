@@ -1,84 +1,70 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Tracking PO</title>
+  <meta charset="UTF-8">
+  <title>Tracking PO</title>
 
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f3f3f3;
-}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+    }
 
-.box {
-  width: 420px;
-  margin: 60px auto;
-  background: #fff;
-  padding: 24px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
+    * {
+      box-sizing: border-box;
+    }
 
-input, button {
-  width: 100%;
-  height: 44px;
-  padding: 0 12px;
-  margin-top: 10px;
-  font-size: 14px;
-}
+    h2 {
+      margin: 0 0 16px 0;
+    }
 
-button {
-  background: #f5f5f5;
-  border: 1px solid #ccc;
-  cursor: pointer;
-}
+    .box {
+      width: 420px;
+      margin: 60px auto;
+      background: #fff;
+      padding: 24px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
 
-button:hover {
-  background: #eaeaea;
-}
+    .form-group {
+      width: 100%;
+    }
 
-.result-card {
-  margin-top: 20px;
-  padding: 16px;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  background: #fafafa;
-}
+    input, button {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      margin-top: 10px;
+      font-size: 14px;
+    }
 
-.result-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.icon {
-  width: 26px;
-  text-align: center;
-  margin-right: 8px;
-}
-
-.label {
-  width: 130px;
-  font-weight: bold;
-}
-
-.value {
-  flex: 1;
-}
-</style>
+    .result-card {
+      width: 100%;
+      margin-top: 20px;
+      padding: 16px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="box">
-  <h2>Cek Status PO</h2>
+  <div class="box">
+    <h2>Cek Status PO</h2>
 
-  <input id="poInput" placeholder="Masukkan Nomor PO">
-  <button onclick="cekPO()">CEK</button>
+    <div class="form-group">
+      <input id="poInput" placeholder="Masukkan Nomor PO">
+      <button onclick="cekPO()">CEK</button>
+    </div>
 
-  <div id="result"></div>
-</div>
+    <div id="result"></div>
+  </div>
+
+</body>
+</html>
 
 <script>
 /* ==========================
@@ -197,3 +183,4 @@ async function cekPO() {
 
 </body>
 </html>
+
