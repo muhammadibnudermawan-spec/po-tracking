@@ -154,6 +154,13 @@ async function cekPO() {
         <div class="label">PIC</div>
         <div class="value">${ditemukan["Nama PIC vendor"]}</div>
       </div>
+      <div class="result-row">
+  <div class="icon">📝</div>
+  <div class="label">Keterangan</div>
+  <div class="value">
+    ${ditemukan["Keterangan"] || "-"}
+  </div>
+</div>
     `;
   } catch (err) {
     console.error(err);
@@ -164,3 +171,4 @@ async function cekPO() {
 
 </body>
 </html>
+
