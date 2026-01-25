@@ -123,6 +123,14 @@ async function cekPO() {
       res.innerHTML = "❌ Data tidak ditemukan";
       return;
     }
+    const tipePO = (ditemukan["Tipe PO"] || "").trim().toLowerCase();
+
+const keterangan =
+  ditemukan["Keterangan"] ??
+  ditemukan["KETERANGAN"] ??
+  ditemukan["keterangan"] ??
+  "-";
+
 const tipePO = (ditemukan["Tipe PO"] || "").trim().toLowerCase();
     res.innerHTML = `
       <div class="result-row">
@@ -179,6 +187,7 @@ const tipePO = (ditemukan["Tipe PO"] || "").trim().toLowerCase();
 
 </body>
 </html>
+
 
 
 
