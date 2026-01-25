@@ -10,24 +10,21 @@ body {
   background: #f3f3f3;
 }
 
-/* Card utama */
 .box {
   width: 420px;
   margin: 60px auto;
   background: #fff;
   padding: 24px;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* Input & Button */
 input, button {
   width: 100%;
   height: 44px;
   padding: 0 12px;
   margin-top: 10px;
   font-size: 14px;
-  box-sizing: border-box;
 }
 
 button {
@@ -40,7 +37,6 @@ button:hover {
   background: #eaeaea;
 }
 
-/* Card hasil */
 .result-card {
   margin-top: 20px;
   padding: 16px;
@@ -49,28 +45,24 @@ button:hover {
   background: #fafafa;
 }
 
-/* Baris hasil */
 .result-row {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   font-size: 14px;
 }
 
-/* Ikon */
 .icon {
-  width: 24px;
+  width: 26px;
   text-align: center;
   margin-right: 8px;
 }
 
-/* Label */
 .label {
-  width: 120px;
+  width: 130px;
   font-weight: bold;
 }
 
-/* Value */
 .value {
   flex: 1;
 }
@@ -85,17 +77,26 @@ button:hover {
   <input id="poInput" placeholder="Masukkan Nomor PO">
   <button onclick="cekPO()">CEK</button>
 
-  <div class="result-card" id="result"></div>
+  <div id="result"></div>
 </div>
 
 <script>
+/* ==========================
+   GANTI API URL DI SINI
+   ========================== */
 const API_URL = "https://script.google.com/macros/s/AKfycbzQOxnBn5n4C34sei11rWvlMosTFdCn6WVA3QGAy5AxCdSr_CGvaQXqmsE40-vAOuvKSQ/exec";
 
+/* ==========================
+   HELPER
+   ========================== */
 function formatTanggal(v) {
   if (!v) return "-";
   return new Date(v).toLocaleDateString("id-ID");
 }
 
+/* ==========================
+   MAIN FUNCTION
+   ========================== */
 async function cekPO() {
   const po = document.getElementById("poInput").value.trim();
   const res = document.getElementById("result");
@@ -114,8 +115,9 @@ async function cekPO() {
     let ditemukan = null;
 
     for (let i = 0; i < data.length; i++) {
-      if (String(data[i]["Nomor PO"]).trim() == po) {
+      if (String(data[i]["Nomor PO"]).trim() === po) {
         ditemukan = data[i];
+        break;
       }
     }
 
@@ -123,61 +125,69 @@ async function cekPO() {
       res.innerHTML = "❌ Data tidak ditemukan";
       return;
     }
+
+    /* ==========================
+       NORMALISASI DATA (ANTI ERROR)
+       ========================== */
     const tipePO = (ditemukan["Tipe PO"] || "").trim().toLowerCase();
 
-const keterangan =
-  ditemukan["Keterangan"] ??
-  ditemukan["KETERANGAN"] ??
-  ditemukan["keterangan"] ??
-  "-";
+    const keterangan =
+      ditemukan["Keterangan"] ??
+      ditemukan["KETERANGAN"] ??
+      ditemukan["keterangan"] ??
+      "-";
 
-const tipePO = (ditemukan["Tipe PO"] || "").trim().toLowerCase();
+    /* ==========================
+       RENDER HASIL
+       ========================== */
     res.innerHTML = `
-      <div class="result-row">
-        <div class="icon">📦</div>
-        <div class="label">PO</div>
-        <div class="value">${ditemukan["Nomor PO"]}</div>
-      </div>
-      
-      <div class="result-row">
-      <div class="icon">
-        ${ditemukan["Tipe PO"] === "Jasa" ? "🛠️" : "📦"}
-      </div>
-      <div class="label">Tipe PO</div>
-      <div class="value">${ditemukan["Tipe PO"]}</div>
-    </div>
+      <div class="result-card">
 
-      <div class="result-row">
-        <div class="icon">🏭</div>
-        <div class="label">Vendor</div>
-        <div class="value">${ditemukan["Nama Vendor"]}</div>
-      </div>
+        <div class="result-row">
+          <div class="icon">📦</div>
+          <div class="label">Nomor PO</div>
+          <div class="value">${ditemukan["Nomor PO"]}</div>
+        </div>
 
-      <div class="result-row">
-        <div class="icon">🚚</div>
-        <div class="label">Status</div>
-        <div class="value">${ditemukan["Status PO"]}</div>
-      </div>
+        <div class="result-row">
+          <div class="icon">${tipePO === "jasa" ? "🛠️" : "📦"}</div>
+          <div class="label">Tipe PO</div>
+          <div class="value">${ditemukan["Tipe PO"] || "-"}</div>
+        </div>
 
-      <div class="result-row">
-        <div class="icon">📅</div>
-        <div class="label">Estimasi</div>
-        <div class="value">${formatTanggal(ditemukan["Perkiraan tanggal sampai"])}</div>
-      </div>
+        <div class="result-row">
+          <div class="icon">🏭</div>
+          <div class="label">Vendor</div>
+          <div class="value">${ditemukan["Nama Vendor"]}</div>
+        </div>
 
-      <div class="result-row">
-        <div class="icon">👤</div>
-        <div class="label">PIC</div>
-        <div class="value">${ditemukan["Nama PIC vendor"]}</div>
-      </div>
-      <div class="result-row">
-  <div class="icon">📝</div>
-  <div class="label">Keterangan</div>
-  <div class="value">${keterangan}</div>
-</div>
+        <div class="result-row">
+          <div class="icon">🚚</div>
+          <div class="label">Status</div>
+          <div class="value">${ditemukan["Status PO"]}</div>
+        </div>
 
-</div>
+        <div class="result-row">
+          <div class="icon">📅</div>
+          <div class="label">Estimasi</div>
+          <div class="value">${formatTanggal(ditemukan["Perkiraan tanggal sampai"])}</div>
+        </div>
+
+        <div class="result-row">
+          <div class="icon">👤</div>
+          <div class="label">PIC</div>
+          <div class="value">${ditemukan["Nama PIC vendor"]}</div>
+        </div>
+
+        <div class="result-row">
+          <div class="icon">📝</div>
+          <div class="label">Keterangan</div>
+          <div class="value">${keterangan}</div>
+        </div>
+
+      </div>
     `;
+
   } catch (err) {
     console.error(err);
     res.innerHTML = "❌ Gagal mengambil data";
@@ -187,10 +197,3 @@ const tipePO = (ditemukan["Tipe PO"] || "").trim().toLowerCase();
 
 </body>
 </html>
-
-
-
-
-
-
-
