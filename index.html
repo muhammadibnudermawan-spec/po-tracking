@@ -5,121 +5,113 @@
 <title>Tracking PO</title>
 
 <style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
+body{
   font-family: Arial, sans-serif;
-  background: #f3f3f3;
+  background:#f4f6f9;
 }
 
-.container {
-  width: 480px;
-  margin: 60px auto;
-  background: #ffffff;
-  padding: 24px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+.container{
+  width:500px;
+  margin:60px auto;
+  background:#fff;
+  padding:30px;
+  border-radius:12px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.08);
 }
 
-h2 {
-  margin-bottom: 20px;
+h2{
+  margin-bottom:20px;
 }
 
-input, button {
-  width: 100%;
-  height: 44px;
-  margin-bottom: 10px;
-  padding: 0 12px;
-  font-size: 14px;
+input,button{
+  width:100%;
+  height:45px;
+  margin-bottom:12px;
+  padding:0 12px;
+  font-size:14px;
 }
 
-button {
-  cursor: pointer;
-  background: #f5f5f5;
-  border: 1px solid #ccc;
+button{
+  cursor:pointer;
+  background:#2ecc71;
+  color:white;
+  border:none;
+  font-weight:bold;
 }
 
-button:disabled {
-  background: #e0e0e0;
+button:hover{
+  background:#27ae60;
 }
 
-.result-card {
-  margin-top: 20px;
-  padding: 16px;
-  background: #fafafa;
-  border: 1px solid #eee;
-  border-radius: 8px;
+/* TRACKING */
+.tracking{
+  display:flex;
+  justify-content:space-between;
+  margin:35px 10px;
+  position:relative;
 }
 
-.result-row {
-  display: flex;
-  margin-bottom: 10px;
-  font-size: 14px;
+.tracking::before{
+  content:"";
+  position:absolute;
+  top:20px;
+  left:5%;
+  width:90%;
+  height:4px;
+  background:#ddd;
+  z-index:1;
 }
 
-.label {
-  width: 140px;
-  font-weight: bold;
+.step{
+  text-align:center;
+  width:33%;
+  position:relative;
+  z-index:2;
 }
 
-.value {
-  flex: 1;
+.circle{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:#ccc;
+  margin:auto;
+  line-height:40px;
+  color:white;
+  font-weight:bold;
 }
 
-/* ===== TRACKING STYLE ===== */
-
-.tracking-wrapper {
-  margin-bottom: 25px;
+.active .circle{
+  background:#2ecc71;
 }
 
-.tracking-bar {
-  display: flex;
-  justify-content: space-between;
-  position: relative;
-  margin: 30px 10px;
+.step p{
+  font-size:12px;
+  margin-top:8px;
+  font-weight:600;
 }
 
-.tracking-bar::before {
-  content: "";
-  position: absolute;
-  top: 20px;
-  left: 5%;
-  width: 90%;
-  height: 4px;
-  background: #e0e0e0;
-  z-index: 1;
+/* RESULT CARD */
+.result-card{
+  margin-top:20px;
+  padding:18px;
+  background:#fafafa;
+  border-radius:10px;
+  border:1px solid #eee;
 }
 
-.step {
-  position: relative;
-  text-align: center;
-  width: 33%;
-  z-index: 2;
+.result-row{
+  display:flex;
+  margin-bottom:12px;
+  font-size:14px;
 }
 
-.circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #d6d6d6;
-  margin: 0 auto;
-  line-height: 40px;
-  color: white;
-  font-weight: bold;
+.label{
+  width:150px;
+  font-weight:bold;
 }
 
-.step.active .circle {
-  background: #28a745;
-}
-
-.step p {
-  margin-top: 8px;
-  font-size: 12px;
-  font-weight: 600;
+.value{
+  flex:1;
 }
 </style>
 </head>
@@ -127,121 +119,113 @@ button:disabled {
 <body>
 
 <div class="container">
-  <h2>Cek Status PO</h2>
+  <h2>🔎 Cek Status PO</h2>
+
   <input id="poInput" placeholder="Masukkan Nomor PO">
-  <button onclick="cekPO()" id="cekBtn">CEK</button>
+  <button onclick="cekPO()">CEK</button>
+
   <div id="result"></div>
 </div>
 
 <script>
 
-const API_URL = "https://script.google.com/macros/s/AKfycbzQOxnBn5n4C34sei11rWvlMosTFdCn6WVA3QGAy5AxCdSr_CGvaQXqmsE40-vAOuvKSQ/exec";
+const API_URL = "PASTE_API_URL_KAMU_DISINI";
 
-function formatTanggal(v) {
-  if (!v) return "-";
+function formatTanggal(v){
+  if(!v) return "-";
   return new Date(v).toLocaleDateString("id-ID");
 }
 
-function generateTracking(status) {
-  const steps = ["DIPROSES", "DIKIRIM", "SAMPAI GUDANG"];
-  status = (status || "").toUpperCase();
-  let activeIndex = steps.indexOf(status);
-  if (activeIndex === -1) activeIndex = 0;
+function generateTracking(status){
+  const steps=["DIPROSES","DIKIRIM","SAMPAI GUDANG"];
+  status=(status||"").toUpperCase();
+  let activeIndex=steps.indexOf(status);
+  if(activeIndex===-1) activeIndex=0;
 
   return `
-    <div class="tracking-wrapper">
-      <div class="tracking-bar">
-        ${steps.map((step, i) => `
-          <div class="step ${i <= activeIndex ? "active" : ""}">
-            <div class="circle">${i <= activeIndex ? "✔" : ""}</div>
-            <p>${step}</p>
-          </div>
-        `).join("")}
+  <div class="tracking">
+    ${steps.map((step,i)=>`
+      <div class="step ${i<=activeIndex?"active":""}">
+        <div class="circle">${i<=activeIndex?"✔":""}</div>
+        <p>${step}</p>
       </div>
-    </div>
-  `;
+    `).join("")}
+  </div>`;
 }
 
-async function cekPO() {
-  const po = document.getElementById("poInput").value.trim();
-  const res = document.getElementById("result");
-  const btn = document.getElementById("cekBtn");
+async function cekPO(){
+  const po=document.getElementById("poInput").value.trim();
+  const res=document.getElementById("result");
 
-  if (!po) {
-    res.innerHTML = "❌ Nomor PO wajib diisi";
+  if(!po){
+    res.innerHTML="❌ Nomor PO wajib diisi";
     return;
   }
 
-  btn.disabled = true;
-  res.innerHTML = "🔍 Mencari data...";
+  res.innerHTML="🔍 Mencari data...";
 
-  try {
-    const response = await fetch(API_URL);
-    const data = await response.json();
+  try{
+    const response=await fetch(API_URL);
+    const data=await response.json();
 
-    let ditemukan = null;
+    let ditemukan=null;
 
-    for (let i = data.length - 1; i >= 0; i--) {
-      if (String(data[i]["Nomor PO"]).trim() === po) {
-        ditemukan = data[i];
+    for(let i=data.length-1;i>=0;i--){
+      if(String(data[i]["Nomor PO"]).trim()===po){
+        ditemukan=data[i];
         break;
       }
     }
 
-    if (!ditemukan) {
-      res.innerHTML = "❌ Data tidak ditemukan";
-      btn.disabled = false;
+    if(!ditemukan){
+      res.innerHTML="❌ Data tidak ditemukan";
       return;
     }
 
-    res.innerHTML = `
+    res.innerHTML=`
       ${generateTracking(ditemukan["Status PO"])}
 
       <div class="result-card">
+
         <div class="result-row">
-          <div class="label">Nomor PO</div>
+          <div class="label">📄 Nomor PO</div>
           <div class="value">${ditemukan["Nomor PO"]}</div>
         </div>
 
         <div class="result-row">
-          <div class="label">Vendor</div>
+          <div class="label">🏢 Vendor</div>
           <div class="value">${ditemukan["Nama Vendor"]}</div>
         </div>
 
         <div class="result-row">
-          <div class="label">Status</div>
+          <div class="label">🚚 Status</div>
           <div class="value">${ditemukan["Status PO"]}</div>
         </div>
 
         <div class="result-row">
-          <div class="label">Estimasi</div>
+          <div class="label">📅 Estimasi</div>
           <div class="value">${formatTanggal(ditemukan["Perkiraan tanggal sampai"])}</div>
         </div>
 
         <div class="result-row">
-          <div class="label">PIC Vendor</div>
+          <div class="label">👤 PIC Vendor</div>
           <div class="value">${ditemukan["Nama PIC vendor"]}</div>
         </div>
 
         <div class="result-row">
-          <div class="label">Keterangan</div>
-          <div class="value">
-  ${ditemukan["Keterangan"] || ditemukan["KETERANGAN"] || ditemukan["keterangan"] || "-"}
-</div>
+          <div class="label">📝 Keterangan</div>
+          <div class="value">${ditemukan["Keterangan"] || "-"}</div>
+        </div>
+
       </div>
     `;
 
-  } catch (err) {
-    res.innerHTML = "❌ Gagal mengambil data";
+  }catch(err){
+    res.innerHTML="❌ Gagal mengambil data";
   }
-
-  btn.disabled = false;
 }
 
 </script>
-
 </body>
 </html>
-
-
 
