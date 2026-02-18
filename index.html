@@ -51,23 +51,22 @@ button:hover{
   background:#27ae60;
 }
 
-/* TRACKING */
+/* ===== TRACKING FIXED ===== */
 
 .tracking{
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  margin:45px 0;
   position:relative;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:50px 40px;
 }
 
-/* Background line (shorter & centered) */
-.tracking::before{
-  content:"";
+/* Background line */
+.line-bg{
   position:absolute;
   top:21px;
-  left:18%;
-  width:64%;
+  left:0;
+  right:0;
   height:4px;
   background:#ddd;
   border-radius:5px;
@@ -75,10 +74,10 @@ button:hover{
 }
 
 /* Progress line */
-.progress{
+.line-progress{
   position:absolute;
   top:21px;
-  left:18%;
+  left:0;
   height:4px;
   background:#2ecc71;
   border-radius:5px;
@@ -89,6 +88,7 @@ button:hover{
 .step{
   text-align:center;
   z-index:3;
+  flex:1;
 }
 
 .circle{
@@ -113,7 +113,8 @@ button:hover{
   font-weight:600;
 }
 
-/* Result Card */
+/* ===== RESULT CARD ===== */
+
 .result-card{
   background:#f8f9fb;
   padding:20px;
@@ -154,29 +155,37 @@ button:hover{
 <script>
 
 const API_URL="https://script.google.com/macros/s/AKfycbzQOxnBn5n4C34sei11rWvlMosTFdCn6WVA3QGAy5AxCdSr_CGvaQXqmsE40-vAOuvKSQ/exec";
+
 function formatTanggal(v){
   if(!v) return "-";
   return new Date(v).toLocaleDateString("id-ID");
 }
 
 function generateTracking(status){
+
   const steps=["DIPROSES","DIKIRIM","SAMPAI GUDANG"];
   status=(status||"").toUpperCase();
   let activeIndex=steps.indexOf(status);
   if(activeIndex===-1) activeIndex=0;
 
-  let progressWidth=(activeIndex/(steps.length-1))*64;
+  // Lebih stabil (0%, 50%, 100%)
+  let progressWidth = (activeIndex / (steps.length - 1)) * 100;
 
   return `
-  <div class="tracking">
-    <div class="progress" style="width:${progressWidth}%"></div>
-    ${steps.map((step,i)=>`
-      <div class="step ${i<=activeIndex?"active":""}">
-        <div class="circle">${i<=activeIndex?"✔":""}</div>
-        <p>${step}</p>
-      </div>
-    `).join("")}
-  </div>`;
+    <div class="tracking">
+
+      <div class="line-bg"></div>
+      <div class="line-progress" style="width:${progressWidth}%"></div>
+
+      ${steps.map((step,i)=>`
+        <div class="step ${i<=activeIndex?"active":""}">
+          <div class="circle">${i<=activeIndex?"✔":""}</div>
+          <p>${step}</p>
+        </div>
+      `).join("")}
+
+    </div>
+  `;
 }
 
 function getStatusBadge(status){
@@ -188,6 +197,7 @@ function getStatusBadge(status){
 }
 
 async function cekPO(){
+
   const po=document.getElementById("poInput").value.trim();
   const res=document.getElementById("result");
 
@@ -199,10 +209,12 @@ async function cekPO(){
   res.innerHTML="🔄 Memproses...";
 
   try{
+
     const response=await fetch(API_URL);
     const data=await response.json();
 
     let ditemukan=null;
+
     for(let i=data.length-1;i>=0;i--){
       if(String(data[i]["Nomor PO"]).trim()===po){
         ditemukan=data[i];
@@ -250,6 +262,7 @@ async function cekPO(){
         </div>
       </div>
     `;
+
   }catch(err){
     res.innerHTML="❌ Gagal mengambil data";
   }
@@ -258,4 +271,3 @@ async function cekPO(){
 </script>
 </body>
 </html>
-
