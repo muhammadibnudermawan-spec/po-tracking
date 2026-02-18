@@ -225,8 +225,9 @@ async function cekPO() {
 
         <div class="result-row">
           <div class="label">Keterangan</div>
-          <div class="value">${ditemukan["Keterangan"] || "-"}</div>
-        </div>
+          <div class="value">
+  ${ditemukan["Keterangan"] || ditemukan["KETERANGAN"] || ditemukan["keterangan"] || "-"}
+</div>
       </div>
     `;
 
@@ -241,5 +242,6 @@ async function cekPO() {
 
 </body>
 </html>
+
 
 
