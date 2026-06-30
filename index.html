@@ -33,6 +33,7 @@ input{
   border-radius:10px;
   border:1px solid #ccc;
   margin-bottom:15px;
+  box-sizing: border-box;
 }
 
 button{
@@ -58,26 +59,26 @@ button:hover{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin:50px 40px;
+  margin:40px 0 50px 0; /* Dioptimalkan jarak marginnya */
 }
 
-/* Background line */
+/* Background line - Disesuaikan agar pas di tengah lingkaran */
 .line-bg{
   position:absolute;
   top:21px;
-  left:0;
-  right:0;
+  left:15%;
+  right:15%;
   height:4px;
   background:#ddd;
   border-radius:5px;
   z-index:1;
 }
 
-/* Progress line */
+/* Progress line - Disesuaikan agar pas di tengah lingkaran */
 .line-progress{
   position:absolute;
   top:21px;
-  left:0;
+  left:15%;
   height:4px;
   background:#2ecc71;
   border-radius:5px;
@@ -120,6 +121,7 @@ button:hover{
   padding:20px;
   border-radius:15px;
   border:1px solid #eee;
+  margin-top:20px;
 }
 
 .result-row{
@@ -168,8 +170,8 @@ function generateTracking(status){
   let activeIndex=steps.indexOf(status);
   if(activeIndex===-1) activeIndex=0;
 
-  // Lebih stabil (0%, 50%, 100%)
-  let progressWidth = (activeIndex / (steps.length - 1)) * 100;
+  // Lebar progres dihitung dari sisa area 70% (karena dipotong left 15% & right 15%)
+  let progressWidth = (activeIndex / (steps.length - 1)) * 70;
 
   return `
     <div class="tracking">
@@ -198,15 +200,15 @@ function getStatusBadge(status){
 
 async function cekPO(){
 
-  const po=document.getElementById("poInput").value.trim();
+  const po=document.getElementById("poInput").value.trim().toUpperCase();
   const res=document.getElementById("result");
 
   if(!po){
-    res.innerHTML="❌ Nomor PO wajib diisi";
+    res.innerHTML="<div style='margin-top:15px;'>❌ Nomor PO wajib diisi</div>";
     return;
   }
 
-  res.innerHTML="🔄 Memproses...";
+  res.innerHTML="<div style='margin-top:15px;'>🔄 Memproses...</div>";
 
   try{
 
@@ -216,14 +218,14 @@ async function cekPO(){
     let ditemukan=null;
 
     for(let i=data.length-1;i>=0;i--){
-      if(String(data[i]["Nomor PO"]).trim()===po){
+      if(String(data[i]["Nomor PO"]).trim().toUpperCase()===po){
         ditemukan=data[i];
         break;
       }
     }
 
     if(!ditemukan){
-      res.innerHTML="❌ Data tidak ditemukan";
+      res.innerHTML="<div style='margin-top:15px;'>❌ Data tidak ditemukan</div>";
       return;
     }
 
@@ -264,7 +266,7 @@ async function cekPO(){
     `;
 
   }catch(err){
-    res.innerHTML="❌ Gagal mengambil data";
+    res.innerHTML="<div style='margin-top:15px;'>❌ Gagal mengambil data</div>";
   }
 }
 
