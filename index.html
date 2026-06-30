@@ -4,16 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tracking Purchase Order</title>
-
 <style>
+*{box-sizing:border-box;margin:0;padding:0}
+
 body{
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg,#eef2f7,#d9e2ec);
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#eef2f7,#d9e2ec);
+  min-height:100vh;
+  padding:40px 16px;
 }
 
 .container{
   max-width:520px;
-  margin:60px auto;
+  margin:0 auto;
   background:white;
   padding:30px;
   border-radius:18px;
@@ -23,6 +26,7 @@ body{
 h2{
   text-align:center;
   margin-bottom:20px;
+  font-size:20px;
 }
 
 input{
@@ -32,6 +36,7 @@ input{
   font-size:14px;
   border-radius:10px;
   border:1px solid #ccc;
+  display:block;
   margin-bottom:15px;
 }
 
@@ -43,6 +48,7 @@ button{
   border:none;
   border-radius:10px;
   font-weight:bold;
+  font-size:14px;
   cursor:pointer;
   transition:.3s;
 }
@@ -51,33 +57,31 @@ button:hover{
   background:#27ae60;
 }
 
-/* ===== TRACKING FIXED ===== */
+/* TRACKING */
 
 .tracking{
   position:relative;
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  margin:50px 40px;
+  align-items:flex-start;
+  margin:50px 0;
 }
 
-/* Background line */
 .line-bg{
   position:absolute;
   top:21px;
-  left:0;
-  right:0;
+  left:21px;
+  right:21px;
   height:4px;
   background:#ddd;
   border-radius:5px;
   z-index:1;
 }
 
-/* Progress line */
 .line-progress{
   position:absolute;
   top:21px;
-  left:0;
+  left:21px;
   height:4px;
   background:#2ecc71;
   border-radius:5px;
@@ -89,6 +93,9 @@ button:hover{
   text-align:center;
   z-index:3;
   flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 
 .circle{
@@ -96,10 +103,12 @@ button:hover{
   height:42px;
   border-radius:50%;
   background:#ccc;
-  margin:auto;
-  line-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   color:white;
   font-weight:bold;
+  font-size:16px;
   transition:.3s;
 }
 
@@ -111,9 +120,10 @@ button:hover{
   font-size:12px;
   margin-top:8px;
   font-weight:600;
+  color:#333;
 }
 
-/* ===== RESULT CARD ===== */
+/* RESULT CARD */
 
 .result-card{
   background:#f8f9fb;
@@ -125,8 +135,14 @@ button:hover{
 .result-row{
   display:flex;
   justify-content:space-between;
+  align-items:center;
   margin-bottom:14px;
   font-size:14px;
+  gap:8px;
+}
+
+.result-row span{
+  text-align:right;
 }
 
 .status-badge{
@@ -135,12 +151,17 @@ button:hover{
   font-size:12px;
   font-weight:bold;
   color:white;
+  white-space:nowrap;
 }
 
 .status-diproses{ background:#f39c12; }
 .status-dikirim{ background:#3498db; }
 .status-sampai{ background:#2ecc71; }
 
+.msg{
+  margin-top:12px;
+  font-size:14px;
+}
 </style>
 </head>
 <body>
@@ -153,109 +174,97 @@ button:hover{
 </div>
 
 <script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzQOxnBn5n4C34sei11rWvlMosTFdCn6WVA3QGAy5AxCdSr_CGvaQXqmsE40-vAOuvKSQ/exec";
 
-const API_URL="https://script.google.com/macros/s/AKfycbzQOxnBn5n4C34sei11rWvlMosTFdCn6WVA3QGAy5AxCdSr_CGvaQXqmsE40-vAOuvKSQ/exec";
-
-function formatTanggal(v){
-  if(!v) return "-";
+function formatTanggal(v) {
+  if (!v) return "-";
   return new Date(v).toLocaleDateString("id-ID");
 }
 
-function generateTracking(status){
+function generateTracking(status) {
+  const steps = ["DIPROSES", "DIKIRIM", "SAMPAI GUDANG"];
+  status = (status || "").toUpperCase();
+  let activeIndex = steps.indexOf(status);
+  if (activeIndex === -1) activeIndex = 0;
 
-  const steps=["DIPROSES","DIKIRIM","SAMPAI GUDANG"];
-  status=(status||"").toUpperCase();
-  let activeIndex=steps.indexOf(status);
-  if(activeIndex===-1) activeIndex=0;
-
-  // Lebih stabil (0%, 50%, 100%)
-  let progressWidth = (activeIndex / (steps.length - 1)) * 100;
+  const totalWidth = 100;
+  const circleOffset = (21 / 478) * 100; // 21px dari 478px (520 - 30 - 30 - padding)
+  const usable = totalWidth - circleOffset * 2;
+  const progressWidth = circleOffset + (activeIndex / (steps.length - 1)) * usable;
 
   return `
     <div class="tracking">
-
       <div class="line-bg"></div>
-      <div class="line-progress" style="width:${progressWidth}%"></div>
-
-      ${steps.map((step,i)=>`
-        <div class="step ${i<=activeIndex?"active":""}">
-          <div class="circle">${i<=activeIndex?"✔":""}</div>
+      <div class="line-progress" style="width:calc(${activeIndex === 0 ? '0%' : activeIndex === steps.length - 1 ? '100% - 42px' : `(100% - 42px) * ${activeIndex} / ${steps.length - 1}`})"></div>
+      ${steps.map((step, i) => `
+        <div class="step ${i <= activeIndex ? "active" : ""}">
+          <div class="circle">${i <= activeIndex ? "✔" : ""}</div>
           <p>${step}</p>
         </div>
       `).join("")}
-
     </div>
   `;
 }
 
-function getStatusBadge(status){
-  status=status.toUpperCase();
-  if(status==="DIPROSES") return `<span class="status-badge status-diproses">Diproses</span>`;
-  if(status==="DIKIRIM") return `<span class="status-badge status-dikirim">Dikirim</span>`;
-  if(status==="SAMPAI GUDANG") return `<span class="status-badge status-sampai">Sampai</span>`;
+function getStatusBadge(status) {
+  const s = status.toUpperCase();
+  if (s === "DIPROSES") return `<span class="status-badge status-diproses">Diproses</span>`;
+  if (s === "DIKIRIM")  return `<span class="status-badge status-dikirim">Dikirim</span>`;
+  if (s === "SAMPAI GUDANG") return `<span class="status-badge status-sampai">Sampai</span>`;
   return status;
 }
 
-async function cekPO(){
+async function cekPO() {
+  const po  = document.getElementById("poInput").value.trim();
+  const res = document.getElementById("result");
 
-  const po=document.getElementById("poInput").value.trim();
-  const res=document.getElementById("result");
-
-  if(!po){
-    res.innerHTML="❌ Nomor PO wajib diisi";
+  if (!po) {
+    res.innerHTML = `<p class="msg" style="color:red">❌ Nomor PO wajib diisi</p>`;
     return;
   }
 
-  res.innerHTML="🔄 Memproses...";
+  res.innerHTML = `<p class="msg">🔄 Memproses...</p>`;
 
-  try{
+  try {
+    const response = await fetch(API_URL);
+    const data     = await response.json();
 
-    const response=await fetch(API_URL);
-    const data=await response.json();
-
-    let ditemukan=null;
-
-    for(let i=data.length-1;i>=0;i--){
-      if(String(data[i]["Nomor PO"]).trim()===po){
-        ditemukan=data[i];
+    let ditemukan = null;
+    for (let i = data.length - 1; i >= 0; i--) {
+      if (String(data[i]["Nomor PO"]).trim() === po) {
+        ditemukan = data[i];
         break;
       }
     }
 
-    if(!ditemukan){
-      res.innerHTML="❌ Data tidak ditemukan";
+    if (!ditemukan) {
+      res.innerHTML = `<p class="msg" style="color:red">❌ Data tidak ditemukan</p>`;
       return;
     }
 
-    res.innerHTML=`
+    res.innerHTML = `
       ${generateTracking(ditemukan["Status PO"])}
-
       <div class="result-card">
         <div class="result-row">
           <strong>📄 Nomor PO</strong>
           <span>${ditemukan["Nomor PO"]}</span>
         </div>
-
         <div class="result-row">
           <strong>🏢 Vendor</strong>
           <span>${ditemukan["Nama Vendor"]}</span>
         </div>
-
         <div class="result-row">
           <strong>🚚 Status</strong>
           ${getStatusBadge(ditemukan["Status PO"])}
         </div>
-
         <div class="result-row">
           <strong>📅 Estimasi</strong>
           <span>${formatTanggal(ditemukan["Perkiraan tanggal sampai"])}</span>
         </div>
-
         <div class="result-row">
           <strong>👤 PIC Vendor</strong>
           <span>${ditemukan["Nama PIC vendor"]}</span>
         </div>
-
         <div class="result-row">
           <strong>📝 Keterangan</strong>
           <span>${ditemukan["Keterangan"] || "-"}</span>
@@ -263,11 +272,10 @@ async function cekPO(){
       </div>
     `;
 
-  }catch(err){
-    res.innerHTML="❌ Gagal mengambil data";
+  } catch (err) {
+    res.innerHTML = `<p class="msg" style="color:red">❌ Gagal mengambil data</p>`;
   }
 }
-
 </script>
 </body>
 </html>
